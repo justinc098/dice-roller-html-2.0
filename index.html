@@ -10,10 +10,11 @@
     <h1>Dice Roller</h1>
     <button onclick="rollDice()">Roll Dice</button>
     <div id="result"></div>
-    
+    <div id="savedRolls"></div>
+
     <script>
         // Asynchronous call to wake up the server
-        fetch('https://dice-roller-2.azurewebsites.net')
+        fetch('https://your-restful-api-server-url')
             .then(() => {
                 console.log('Server woke up successfully!');
             })
@@ -23,10 +24,12 @@
 
         // Call remote RESTful API to roll dice
         function rollDice() {
-            fetch('https://dice-roller-2.azurewebsites.net')
+            fetch('https://your-restful-api-server-url/roll')
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('result').innerText = `You rolled: ${data.result}`;
+                    const result = data.result;
+                    document.getElementById('result').innerText = `You rolled: ${result}`;
+                    saveRoll(result);
                 })
                 .catch(error => {
                     console.error('Error rolling dice:', error);
@@ -35,7 +38,7 @@
 
         // Call remote RESTful API to save roll
         function saveRoll(roll) {
-            fetch('https://dice-roller-2.azurewebsites.net', {
+            fetch('https://your-restful-api-server-url/saveRoll', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -45,11 +48,19 @@
             .then(response => response.json())
             .then(data => {
                 console.log(data.message);
+                displaySavedRolls(data.rolls);
             })
             .catch(error => {
                 console.error('Error saving roll:', error);
             });
         }
+
+        // Display saved rolls
+        function displaySavedRolls(rolls) {
+            const rollsList = rolls.map(roll => `<li>${roll}</li>`).join('');
+            document.getElementById('savedRolls').innerHTML = `<h2>Saved Rolls</h2><ul>${rollsList}</ul>`;
+        }
     </script>
 </body>
 </html>
+
