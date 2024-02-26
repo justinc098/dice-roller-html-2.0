@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dice Roller</title>
+</head>
+<body>
+    <h1>Dice Roller</h1>
+    <button onclick="rollDice()">Roll Dice</button>
+    <div id="result"></div>
+    
+    <script>
+        // Asynchronous call to wake up the server
+        fetch('https://dice-roller-2.azurewebsites.net')
+            .then(() => {
+                console.log('Server woke up successfully!');
+            })
+            .catch(error => {
+                console.error('Error waking up server:', error);
+            });
+
+        // Call remote RESTful API to roll dice
+        function rollDice() {
+            fetch('https://dice-roller-2.azurewebsites.net')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('result').innerText = `You rolled: ${data.result}`;
+                })
+                .catch(error => {
+                    console.error('Error rolling dice:', error);
+                });
+        }
+
+        // Call remote RESTful API to save roll
+        function saveRoll(roll) {
+            fetch('https://dice-roller-2.azurewebsites.net', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ roll })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.message);
+            })
+            .catch(error => {
+                console.error('Error saving roll:', error);
+            });
+        }
+    </script>
+</body>
+</html>
